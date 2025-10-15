@@ -1,0 +1,39 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { Button } from "./components/ui/button"
+import { RouteConfirmVerification, RouteForgotPassword, RouteIndex, RouteOtpVerification, RouteResetPassword, RouteSignIn, RouteSignUp, RouteVerification } from "./helper/RouteName"
+import Index from "./Layout/Index"
+import Layout from "./Layout/Layout"
+import SignUp from "./pages-Auth/SignUp"
+import SignIn from "./pages-Auth/SignIn"
+import ForgotPassword from "./pages-Auth/ForgotPassword"
+import ResetPassword from "./pages-Auth/ResetPassword"
+import OtpVerification from "./pages-Auth/OtpVerification"
+import Verification from "./pages-Auth/Verification"
+import ConfirmVerification from "./pages-Auth/confirmVerification"
+
+
+function App() {
+
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path={RouteIndex} element={<Layout />} >
+            <Route index element={<Index />} />
+          </Route>
+          <Route path={RouteSignIn} element={<SignIn />} />
+          <Route path={RouteSignUp} element={<SignUp />} />
+          <Route path={RouteForgotPassword} element={<ForgotPassword />} />
+          <Route path={RouteResetPassword} element={<ResetPassword />} />
+
+          <Route path={RouteOtpVerification} element={<OtpVerification />} />
+          <Route path={RouteVerification} element={<Verification />} />
+          <Route path={RouteConfirmVerification} element={<ConfirmVerification />} />
+
+        </Routes>
+      </BrowserRouter>
+    </>
+  )
+}
+
+export default App
