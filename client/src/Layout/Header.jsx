@@ -5,6 +5,7 @@ import React from 'react'
 import { FaReact } from 'react-icons/fa6'
 import { FiLogIn } from "react-icons/fi";
 import { Link } from 'react-router-dom';
+import Logout from './../components/Logout';
 
 export default function Header() {
   return (
@@ -17,8 +18,9 @@ export default function Header() {
         <div>
 
           <Button className="hover:cursor" asChild >
-            <Link to={RouteSignIn}> <FiLogIn /> Sign in</Link>
-          </Button>
+            {/* <Link to={RouteSignIn}> <FiLogIn /> Sign in</Link> */}
+
+          </Button> <Logout />
         </div>
       </div>
     </>

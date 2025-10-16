@@ -15,24 +15,31 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { IoMdEyeOff } from "react-icons/io";
 
 import { IoMdEye } from "react-icons/io";
 import { RouteSignIn } from '@/helper/RouteName'
-
+import { useDispatch, useSelector } from 'react-redux'
+import Spinner from '@/components/Spinner'
+import { toast } from 'react-toastify'
+import { resetPassword, resetState, resetUser } from '@/feature/authSlice'
 function ResetPassword() {
   const [showPassword, setPassword] = useState(false)
   const [showPassword1, setPassword1] = useState(false)
 
+  const navigate = useNavigate()
+  const { user, success, error, message, loading, } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
+
 
   const formSchema = z
     .object({
-      password: z.string().min(4, 'Password must be at least 4 characters'),
+      newPassword: z.string().min(4, 'Password must be at least 4 characters'),
       confirmPassword: z.string(),
 
     })
-    .refine((data) => data.password === data.confirmPassword, {
+    .refine((data) => data.newPassword === data.confirmPassword, {
       path: ['confirmPassword'],
       message: 'Passwords do not match',
     });
@@ -44,15 +51,37 @@ function ResetPassword() {
     resolver: zodResolver(formSchema),
     defaultValues: {
 
-      password: "",
+      newPassword: "",
       confirmPassword: "",
     },
   })
 
 
-  function onSubmit(values) {
+  async function onSubmit(values) {
+    try {
+      const formData = {
+        newPassword: values.newPassword,
+        confirmPassword: values.confirmPassword
 
-    console.log(values)
+      }
+
+
+      const response = await dispatch(resetPassword(formData)).unwrap()
+
+      toast.success(response.message)
+      form.reset()
+      dispatch(resetState())
+      dispatch(resetUser())
+      navigate(RouteSignIn)
+
+
+    }
+    catch (error) {
+      toast.error(error)
+    }
+  }
+  if (loading) {
+    return <Spinner />
   }
 
 
@@ -70,7 +99,7 @@ function ResetPassword() {
               <div>
                 <FormField
                   control={form.control}
-                  name="password"
+                  name="newPassword"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">Password</FormLabel>

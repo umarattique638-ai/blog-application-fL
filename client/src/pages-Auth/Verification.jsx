@@ -1,7 +1,13 @@
 import { Card } from '@/components/ui/card'
+import { RouteSignIn } from '@/helper/RouteName';
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
 function Verification() {
+  const naviagte = useNavigate()
+  setTimeout(() => {
+    naviagte(RouteSignIn)
+  }, 2000);
   return (
     <>
       <div className='flex justify-center items-center h-screen'>

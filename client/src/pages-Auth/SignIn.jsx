@@ -15,15 +15,25 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { IoMdEyeOff } from "react-icons/io";
 
 import { IoMdEye } from "react-icons/io";
-import { RouteForgotPassword, RouteSignUp } from './../helper/RouteName';
+import { RouteForgotPassword, RouteIndex, RouteSignUp } from './../helper/RouteName';
+import { useDispatch, useSelector } from 'react-redux'
+import Spinner from '@/components/Spinner'
+import { toast } from 'react-toastify'
+import { loginUser } from '@/feature/authSlice'
+
 
 function SignIn() {
 
   const [showPassword, setPassword] = useState(false)
+  const navigate = useNavigate()
+  const { user, success, error, message, loading, } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
+
+
 
   const formSchema = z.object({
     email: z.string().email(),
@@ -43,9 +53,28 @@ function SignIn() {
   })
 
 
-  function onSubmit() {
+  async function onSubmit(values) {
+    try {
+      const formData = {
+        email: values.email,
+        password: values.password
+      }
 
-    console.log(values)
+
+      const response = await dispatch(loginUser(formData)).unwrap()
+
+      toast.success(response.message)
+      form.reset()
+      navigate(RouteIndex)
+
+
+    }
+    catch (error) {
+      toast.error(error)
+    }
+  }
+  if (loading) {
+    return <Spinner />
   }
 
 

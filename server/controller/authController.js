@@ -130,15 +130,15 @@ export const loginUser = async (req, res, next) => {
       { expiresIn: "7d" }
     );
 
-    let response = res.cookie("access_token", accessToken, {
+    res.cookie("access_token", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    let usersresponse = res.cookie("user", user, {
+    res.cookie("user", user, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

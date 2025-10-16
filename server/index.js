@@ -13,7 +13,8 @@ const app = express();
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(express.json());
+app.use(express.json()); // ✅ This is mandatory for JSON body parsing
+
 app.use(cookieParser());
 app.use(
   cors({

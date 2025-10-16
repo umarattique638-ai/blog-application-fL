@@ -15,11 +15,19 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-import { RouteSignIn } from './../helper/RouteName';
-
+import { RouteOtpVerification, RouteSignIn } from './../helper/RouteName';
+import { useDispatch, useSelector } from 'react-redux'
+import Spinner from '@/components/Spinner'
+import { toast } from 'react-toastify'
+import { forgotPassword, resetState, resetUser } from '@/feature/authSlice'
 function ForgotPassword() {
+
+  const navigate = useNavigate()
+  const { user, success, error, message, loading, } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
+
 
   const formSchema = z.object({
     email: z.string().email(),
@@ -36,11 +44,31 @@ function ForgotPassword() {
   })
 
 
-  function onSubmit() {
+  async function onSubmit(values) {
+    try {
+      const formData = {
+        email: values.email,
 
-    console.log(values)
+      }
+
+
+      const response = await dispatch(forgotPassword(formData)).unwrap()
+
+      toast.success(response.message)
+      dispatch(resetState())
+      dispatch(resetUser())
+      form.reset()
+      navigate(RouteOtpVerification)
+
+
+    }
+    catch (error) {
+      toast.error(error)
+    }
   }
-
+  if (loading) {
+    return <Spinner />
+  }
 
   return (
     <>

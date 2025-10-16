@@ -15,18 +15,26 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { IoMdEyeOff } from "react-icons/io";
 
 import { IoMdEye } from "react-icons/io";
-import { RouteSignIn, RouteSignUp } from './../helper/RouteName';
+import { RouteSignIn, RouteSignUp, RouteVerification } from './../helper/RouteName';
+import { useDispatch, useSelector } from 'react-redux'
+import Spinner from '@/components/Spinner'
+import { toast } from 'react-toastify'
+import { registerUser } from '@/feature/authSlice'
+
 
 function SignUp() {
 
   const [showPassword, setPassword] = useState(false)
   const [showPassword1, setPassword1] = useState(false)
-
   const [imagePreview, setImagePreview] = useState(false)
+
+  const navigate = useNavigate()
+  const { user, success, error, message, loading, } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
 
   const formSchema = z
     .object({
@@ -70,9 +78,33 @@ function SignUp() {
   })
 
 
-  function onSubmit(values) {
+  async function onSubmit(values) {
+    try {
+      const formData = new FormData()
+      formData.append("name", values.name)
+      formData.append("email", values.email)
+      formData.append("age", values.age)
+      formData.append("password", values.password)
+      if (values.image && values.image[0]) {
+        formData.append("image", values.image[0]);
+      }
 
-    console.log(values)
+      const response = await dispatch(registerUser(formData)).unwrap()
+
+      toast.success(response.message)
+      form.reset()
+      setTimeout(() => {
+        navigate(RouteVerification)
+      }, 2000)
+
+
+    }
+    catch (error) {
+      toast.error(error)
+    }
+  }
+  if (loading) {
+    return <Spinner />
   }
 
   const handleImage = (e, field) => {
