@@ -6,6 +6,7 @@ import {
   registerUser,
   verifyUserEmail,
   optVerification,
+  resetPassword,
 } from "../controller/authController.js";
 
 import upload from "../config/multer.js";
@@ -19,5 +20,6 @@ authRoute.post("/logout", checkToken, logoutUser);
 authRoute.get("/confirm-verification/:token", verifyUserEmail);
 authRoute.post("/forgot-password", forgotPassword);
 authRoute.post("/otp-verification", optVerification);
+authRoute.post("/reset-password", resetPassword);
 
 export default authRoute;

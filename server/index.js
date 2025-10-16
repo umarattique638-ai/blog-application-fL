@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import errorHandlerMiddleware from "./middleware/errorHandlerMiddleware.js";
 import authRoute from "./route/authRoute.js";
+import userRoute from "./route/userRoute.js";
 
 const app = express();
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/auth", authRoute);
+app.use("/api/user", userRoute);
 app.use(errorHandlerMiddleware);
 
 mongoose

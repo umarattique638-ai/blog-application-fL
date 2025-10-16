@@ -138,7 +138,13 @@ export const loginUser = async (req, res, next) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    console.log("Setting Cookie ,", response);
+    let usersresponse = res.cookie("user", user, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
 
     // Update auth document
     auth.access_token = accessToken;
@@ -185,6 +191,12 @@ export const logoutUser = async (req, res, next) => {
 
     // Clear cookie
     res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+    });
+    res.clearCookie("user", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -304,6 +316,21 @@ export const forgotPassword = async (req, res, next) => {
       { expiresIn: "15m" }
     );
 
+    res.cookie("otp", otp, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+    res.cookie("email", email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     // Send OTP email
     await optVerifyEmail(email, token, otp, otpExpired);
     // Update auth document with OTP
@@ -327,8 +354,8 @@ export const optVerification = async (req, res, next) => {
       return next(errorHandlerHelper(400, "Request body is missing"));
     }
 
-    const { otp, email } = req.body;
-
+    const { otp } = req.body;
+    const email = req.cookies?.email;
     if (!otp) {
       return next(errorHandlerHelper(400, "Please fill the field"));
     }
@@ -387,6 +414,12 @@ export const resetPassword = async (req, res, next) => {
 
     const { newPassword, confirmPassword } = req.body;
 
+    const otp = req.cookies?.otp;
+    const email = req.cookies?.email;
+    const resetToken = req.cookies?.resetToken;
+    if (!otp) {
+      return next(errorHandlerHelper(400, "OTP is missing."));
+    }
     if (!newPassword || !confirmPassword) {
       return next(errorHandlerHelper(400, "Please fill the field"));
     }
@@ -411,7 +444,7 @@ export const resetPassword = async (req, res, next) => {
     try {
       decoded = jwt.verify(resetToken, process.env.SECRET_KEY);
     } catch (err) {
-      return next(handleError(400, "Invalid or expired reset token."));
+      return next(errorHandlerHelper(400, "Invalid or expired reset token."));
     }
 
     // Hash new password
@@ -425,6 +458,20 @@ export const resetPassword = async (req, res, next) => {
     await auth.save();
 
     res.clearCookie("resetToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+    });
+
+    res.clearCookie("otp", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+    });
+
+    res.clearCookie("email", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
