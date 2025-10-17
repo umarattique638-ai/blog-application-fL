@@ -13,7 +13,7 @@ const userRoute = express.Router();
 userRoute.get("/showuser/:id", checkToken, showUser);
 userRoute.get("/showalluser", checkToken, showallusers);
 userRoute.delete("/delalluser", checkToken, delAllusers);
-userRoute.delete("/deluser/:id", checkToken, delUser);
+userRoute.delete("/deleteuser/:id", checkToken, delUser);
 userRoute.put(
   "/updateuser/:id",
   upload.single("image"),

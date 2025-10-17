@@ -1,6 +1,6 @@
 import SearchBar from '@/components/SearchBar'
 import { Button } from '@/components/ui/button'
-import { RouteSignIn } from '@/helper/RouteName';
+import { RouteSignIn, RouteUpdateUserProfile, RouteIndex } from '@/helper/RouteName';
 import React from 'react'
 import { FaReact } from 'react-icons/fa6'
 import { FiLogIn } from "react-icons/fi";
@@ -25,9 +25,12 @@ export default function Header() {
   const { user, success, error, message, loading, } = useSelector((state) => state.auth)
 
   const currentUser = user && user.user ? user.user.accessToken : null;
+  const userId = user && user.user ? user.user.user._id : null;
   const userImage = user?.user?.user?.image;
   const baseAuthURL = "http://localhost:8000/uploads/";
   const imageUrl = userImage ? `${baseAuthURL}${userImage}` : "https://github.com/shadcn.png";
+  // const imageUrl = userImage ? "https://github.com/shadcn.png" : "https://github.com/shadcn.png";
+
 
 
   return (
@@ -45,13 +48,24 @@ export default function Header() {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                <Link to={RouteIndex}>My Account</Link>
+                <p className='text-xs'>{user?.user?.user?.name}</p>
+                <p className='text-xs'>{user?.user?.user?.email}</p>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem><FaRegUser />Profile
 
 
+              <DropdownMenuItem>
+                <FaRegUser />
+                <Link to={`/showuser/${userId}`}>Profile</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="mb-6"><IoMdAdd />
+
+
+
+              <DropdownMenuItem className="mb-6">
+
+                <IoMdAdd />
                 Add Post
               </DropdownMenuItem>
               <DropdownMenuItem className="border-t-2 "><MdLogin /><Logout />

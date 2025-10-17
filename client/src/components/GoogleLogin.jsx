@@ -21,10 +21,9 @@ function GoogleLogin() {
       const user = googleResponse.user;
 
       const formData = {
-        name: user.displayName,
+        name: user.displayName || "No Name",
         email: user.email,
-        avatar: user.photoURL,
-        // Optionally add age here if available
+        avatar: user.photoURL || "https://github.com/shadcn.png",
       };
 
       const response = await dispatch(googleLogin(formData)).unwrap();

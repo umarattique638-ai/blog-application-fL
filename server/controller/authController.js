@@ -500,18 +500,22 @@ export const googleLoginUser = async (req, res, next) => {
 
     const pass = "asdasd";
     const hashedPassword = bcryptjs.hashSync(pass, 10);
-    const defaultImage = "dg.jpg";
     if (!user) {
       const userAge = age || 21;
       const newUser = new User({
         name,
         email,
         age: userAge,
-        image: defaultImage,
+        image:
+          typeof avatar === "string" && avatar.trim().length > 0
+            ? avatar
+            : "https://github.com/shadcn.png",
         isVerified: true,
       });
       user = await newUser.save();
     }
+    console.log("avatar:", avatar);
+    console.log("image set to:");
 
     let auth = await Auth.findOne({ user: user._id });
     if (!auth) {

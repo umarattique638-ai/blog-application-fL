@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
       required: true,
+      default: "https://github.com/shadcn.png",
     },
     isVerified: {
       type: Boolean,

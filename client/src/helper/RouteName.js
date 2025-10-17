@@ -6,3 +6,5 @@ export const RouteResetPassword = "/reset-password";
 export const RouteOtpVerification = "/otp-verification";
 export const RouteVerification = "/verification/";
 export const RouteConfirmVerification = "/confirm-verification/:token";
+
+export const RouteUpdateUserProfile = "/updateuser/:id";

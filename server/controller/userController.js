@@ -14,6 +14,7 @@ const __dirname = path.dirname(__filename);
 const showUser = async (req, res) => {
   try {
     const userId = req.params.id;
+
     const user = await User.findById(userId);
     if (!user) {
       return next(errorHandlerHelper(409, "User not Founded"));
