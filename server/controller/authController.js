@@ -72,7 +72,7 @@ export const registerUser = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    return next(errorHandlerHelper(500, "Internal Server Error"));
+    return next(errorHandlerHelper(500, error.message));
   }
 };
 
@@ -171,7 +171,7 @@ export const loginUser = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    return next(errorHandlerHelper(500, "Internal Server Error"));
+    return next(errorHandlerHelper(500, error.message));
   }
 };
 
@@ -215,7 +215,7 @@ export const logoutUser = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    return next(errorHandlerHelper(500, "Internal Server Error"));
+    return next(errorHandlerHelper(500, error.message));
   }
 };
 
@@ -344,7 +344,7 @@ export const forgotPassword = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    return next(errorHandlerHelper(500, "Internal Server Error"));
+    return next(errorHandlerHelper(500, error.message));
   }
 };
 
@@ -402,7 +402,7 @@ export const optVerification = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    return next(errorHandlerHelper(500, "Internal Server Error"));
+    return next(errorHandlerHelper(500, error.message));
   }
 };
 
@@ -484,6 +484,108 @@ export const resetPassword = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    return next(errorHandlerHelper(500, "Internal Server Error"));
+    return next(errorHandlerHelper(500, error.message));
+  }
+};
+
+export const googleLoginUser = async (req, res, next) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return next(errorHandlerHelper(400, "Request body is missing"));
+    }
+
+    const { email, avatar, name, age } = req.body;
+
+    let user = await User.findOne({ email });
+
+    const pass = "asdasd";
+    const hashedPassword = bcryptjs.hashSync(pass, 10);
+    const defaultImage = "dg.jpg";
+    if (!user) {
+      const userAge = age || 21;
+      const newUser = new User({
+        name,
+        email,
+        age: userAge,
+        image: defaultImage,
+        isVerified: true,
+      });
+      user = await newUser.save();
+    }
+
+    let auth = await Auth.findOne({ user: user._id });
+    if (!auth) {
+      auth = new Auth({ user: user._id, password: hashedPassword });
+
+      await auth.save();
+    }
+
+    const accessToken = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.SECRET_KEY,
+      { expiresIn: "30m" }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user._id, email: user.email, type: "refresh" },
+      process.env.SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Store minimal user info or use JWT on client side instead of full user object
+    res.cookie(
+      "user",
+      {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        age: user.age,
+        role: user.role,
+        image: user.image,
+        isVerified: user.isVerified,
+      },
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      }
+    );
+
+    // Update auth document
+    auth.access_token = accessToken;
+    auth.refresh_token = refreshToken;
+    auth.isLoggedIn = true;
+    await auth.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "User Logged In Successfully From Google",
+      user: {
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          age: user.age,
+          role: user.role,
+          image: user.image,
+          isVerified: user.isVerified,
+        },
+        accessToken,
+        refreshToken,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return next(errorHandlerHelper(500, error.message));
   }
 };

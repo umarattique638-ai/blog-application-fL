@@ -8,7 +8,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const registerUser = async (formData) => {
   try {
     const response = await axios.post(`${baseAuthURL}/register`, formData);
-    await sleep(2000); // ⏳ Add delay
+    await sleep(1000); // ⏳ Add delay
     return response.data;
   } catch (error) {
     throw error;
@@ -21,7 +21,7 @@ const verificationUser = async (token) => {
       `${baseAuthURL}/confirm-verification/${token}`,
       { withCredentials: true }
     );
-    await sleep(2000); // ⏳ Add delay
+    await sleep(1000); // ⏳ Add delay
     return response.data;
   } catch (error) {
     throw error;
@@ -33,7 +33,7 @@ const loginUser = async (formData) => {
     const response = await axios.post(`${baseAuthURL}/login`, formData, {
       withCredentials: true,
     });
-    await sleep(2000); // ⏳ Add delay
+    await sleep(1000); // ⏳ Add delay
     return response.data;
   } catch (error) {
     throw error;
@@ -49,7 +49,6 @@ const logoutUser = async () => {
         withCredentials: true,
       }
     );
-    await sleep(2000); // ⏳ Add delay
     return response.data;
   } catch (error) {
     throw error;
@@ -65,7 +64,7 @@ const forgotPassword = async (formData) => {
         withCredentials: true,
       }
     );
-    await sleep(2000); // ⏳ Add delay
+    await sleep(1000); // ⏳ Add delay
     return response.data;
   } catch (error) {
     throw error;
@@ -81,7 +80,7 @@ const otpVerification = async (formData) => {
         withCredentials: true,
       }
     );
-    await sleep(2000); // ⏳ Add delay
+    await sleep(1000); // ⏳ Add delay
     return response.data;
   } catch (error) {
     throw error;
@@ -97,7 +96,19 @@ const resetPassword = async (formData) => {
         withCredentials: true,
       }
     );
-    await sleep(2000); // ⏳ Add delay
+    await sleep(1000); // ⏳ Add delay
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const googleLogin = async (formData) => {
+  try {
+    const response = await axios.post(`${baseAuthURL}/google-login`, formData, {
+      withCredentials: true,
+    });
+    await sleep(1000); // ⏳ Add delay
     return response.data;
   } catch (error) {
     throw error;
@@ -111,6 +122,7 @@ const authService = {
   otpVerification,
   logoutUser,
   resetPassword,
+  googleLogin,
   forgotPassword,
 };
 export default authService;

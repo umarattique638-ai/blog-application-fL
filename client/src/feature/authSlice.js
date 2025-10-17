@@ -123,6 +123,22 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+export const googleLogin = createAsyncThunk(
+  "auth/google-login",
+  async (formData, thunkAPI) => {
+    try {
+      let response = await authService.googleLogin(formData);
+
+      console.log(response);
+      return response;
+    } catch (error) {
+      let message =
+        error?.response?.data?.message || error.message || error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -247,6 +263,23 @@ export const authSlice = createSlice({
         state.message = action.payload;
       })
       .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.success = false;
+        state.error = true;
+        state.user = null;
+        state.message = action.payload;
+      })
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(state.user));
+        state.message = action.payload;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
         state.loading = false;
         state.success = false;
         state.error = true;

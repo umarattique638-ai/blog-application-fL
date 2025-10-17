@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
 import { loginUser } from '@/feature/authSlice'
+import GoogleLogin from '@/components/GoogleLogin'
 
 
 function SignIn() {
@@ -82,7 +83,8 @@ function SignIn() {
     <>
       <div className='flex justify-center items-center h-screen w-screen'>
         <Card className="p-5 w-120 hover:shadow-2xl">
-          <h1 className='text-2xl font-bold text-center mb-10' >Login  Account</h1>
+          <h1 className='text-2xl font-bold text-center ' >Login  Account</h1>
+          <GoogleLogin />
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div>

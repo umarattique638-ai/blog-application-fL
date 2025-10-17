@@ -7,6 +7,7 @@ import {
   verifyUserEmail,
   optVerification,
   resetPassword,
+  googleLoginUser,
 } from "../controller/authController.js";
 
 import upload from "../config/multer.js";
@@ -21,5 +22,5 @@ authRoute.get("/confirm-verification/:token", verifyUserEmail);
 authRoute.post("/forgot-password", forgotPassword);
 authRoute.post("/otp-verification", optVerification);
 authRoute.post("/reset-password", resetPassword);
-
+authRoute.post("/google-login", googleLoginUser);
 export default authRoute;

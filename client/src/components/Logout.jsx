@@ -1,7 +1,5 @@
 import React from 'react'
-import { Button } from './ui/button'
 import { useDispatch, useSelector } from 'react-redux'
-import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
 import { logoutUser, resetState, resetUser } from '@/feature/authSlice'
 import { useNavigate } from 'react-router-dom'
@@ -25,12 +23,10 @@ function Logout() {
       toast.error(err)
     }
   }
-  if (loading) {
-    return <Spinner />
-  }
+
 
   return (
-    <Button onClick={handlelogout}> Logout </Button>
+    <button onClick={handlelogout}> Logout </button  >
   )
 }
 
