@@ -15,18 +15,23 @@ import { Button } from '@/components/ui/button'
 function ShowProfile() {
 
   const navigate = useNavigate()
-  const { user, success, error, message, loading, } = useSelector((state) => state.user)
+  const { user } = useSelector((state) => state.auth);
+
   const dispatch = useDispatch()
 
-  useEffect(() => {
 
-  }, [user])
+  const crUser = user // Handle nested structure
+  const userImage = crUser?.image;
+  const userId = crUser?._id;
+  const name = crUser?.name;
+  const email = crUser?.email;
+  const age = crUser?.age;
 
-  const userImage = user && user.user ? user.user.user.image : null
+  console.log("Cr name ", crUser)
+
   const baseAuthURL = "http://localhost:8000/uploads/";
   const imageUrl = userImage ? `${baseAuthURL}${userImage}` : "https://github.com/shadcn.png";
 
-  const crUser = user && user.user ? user.user.user : null;
   const [imagePreview, setImagePreview] = useState(imageUrl)
   return (
     <>
@@ -36,16 +41,16 @@ function ShowProfile() {
           <div className='flex justify-center items-center'>
             <img src={imagePreview} width={100} className='rounded-full' />
           </div>
-          <h2 className='font-bold'>Name : {crUser.name.toUpperCase()} </h2>
-          <h2 className='font-bold'>Email : {crUser.email} </h2>
-          <h2 className='font-bold'>Age : {crUser.age} </h2>
+          <h2 className='font-bold'>Name : {name} </h2>
+          <h2 className='font-bold'>Email : {email} </h2>
+          <h2 className='font-bold'>Age : {age} </h2>
 
           <div className='flex justify-between '>
             <Button className="hover:cursor-pointer">
-              <Link to={`/updateuser/${crUser._id}`}>Update</Link>
+              <Link to={`/updateuser/${userId}`}>Update</Link>
             </Button>
 
-            <DeleteOneUser className="hover:cursor-pointer" userId={crUser._id} />
+            <DeleteOneUser className="hover:cursor-pointer" userId={userId} />
           </div>
 
         </Card>

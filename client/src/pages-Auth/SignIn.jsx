@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -23,7 +23,7 @@ import { RouteForgotPassword, RouteIndex, RouteSignUp } from './../helper/RouteN
 import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
-import { loginUser } from '@/feature/authSlice'
+import { loginUser, setUser } from '@/feature/authSlice'
 import GoogleLogin from '@/components/GoogleLogin'
 
 
@@ -66,6 +66,7 @@ function SignIn() {
 
       toast.success(response.message)
       form.reset()
+      dispatch(setUser(response.user.user))
       navigate(RouteIndex)
 
 

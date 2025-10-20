@@ -4,7 +4,7 @@ import { signInWithPopup } from "firebase/auth";
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { auth, provider } from '@/helper/firebase';
-import { googleLogin } from '@/feature/authSlice';
+import { googleLogin, setUser } from '@/feature/authSlice';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { RouteIndex } from '@/helper/RouteName';
@@ -20,6 +20,7 @@ function GoogleLogin() {
       const googleResponse = await signInWithPopup(auth, provider);
       const user = googleResponse.user;
 
+      console.log("user Fg", user)
       const formData = {
         name: user.displayName || "No Name",
         email: user.email,
@@ -27,6 +28,7 @@ function GoogleLogin() {
       };
 
       const response = await dispatch(googleLogin(formData)).unwrap();
+      dispatch(setUser(response.user.user))
 
       toast.success(response.message);
       navigate(RouteIndex);

@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+
 
 function Index() {
+
   return (
     <div>Index</div>
   )

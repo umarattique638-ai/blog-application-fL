@@ -23,9 +23,9 @@ import { RouteSignIn, RouteSignUp, RouteVerification } from '../helper/RouteName
 import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
-import { registerUser, resetState } from '@/feature/authSlice'
-import { resetUser, updateUser } from '@/feature/userSlice'
-import DeleteOneUser from '@/components/DeleteOneUser'
+
+import { updateUser } from '@/feature/userSlice'
+import { resetState, resetUser } from '@/feature/authSlice'
 
 
 function UpdateProfile() {
@@ -35,14 +35,21 @@ function UpdateProfile() {
   const { user, success, error, message, loading, } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
 
-  const userImage = user && user.user ? user.user.user.image : null
+
+  const crUser = user // Handle nested structure
+  const userImage = crUser?.image;
+  const userId = crUser?._id;
+  const name = crUser?.name;
+  const email = crUser?.email;
+  const age = crUser?.age;
+
+  console.log("Cr name ", crUser)
+
   const baseAuthURL = "http://localhost:8000/uploads/";
   const imageUrl = userImage ? `${baseAuthURL}${userImage}` : "https://github.com/shadcn.png";
 
-  const crUser = user && user.user ? user.user.user : null;
   const [imagePreview, setImagePreview] = useState(imageUrl)
 
-  let crUserId = crUser._id
 
   const formSchema = z
     .object({

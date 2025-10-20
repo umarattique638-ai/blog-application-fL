@@ -1,10 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import userService from "./userService";
 
-const currentUser = JSON.parse(localStorage.getItem("user"));
-
 const initialState = {
-  user: currentUser || null,
   success: false,
   error: false,
   message: "",
@@ -63,10 +60,6 @@ export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    resetUser: (state) => {
-      state.user = null;
-      localStorage.removeItem("user");
-    },
     resetState: (state) => {
       state.error = false;
       state.success = false;
