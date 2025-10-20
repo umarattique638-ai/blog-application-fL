@@ -23,7 +23,8 @@ import { RouteSignIn } from '@/helper/RouteName'
 import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
-import { resetPassword, resetState, resetUser } from '@/feature/authSlice'
+import { resetAuthState, resetPassword, resetUser } from '@/feature/authSlice'
+import { resetUserState } from '@/feature/userSlice'
 function ResetPassword() {
   const [showPassword, setPassword] = useState(false)
   const [showPassword1, setPassword1] = useState(false)
@@ -70,7 +71,8 @@ function ResetPassword() {
 
       toast.success(response.message)
       form.reset()
-      dispatch(resetState())
+      dispatch(resetAuthState())
+      dispatch(resetUserState())
       dispatch(resetUser())
       navigate(RouteSignIn)
 

@@ -60,7 +60,7 @@ export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    resetState: (state) => {
+    resetUserState: (state) => {
       state.error = false;
       state.success = false;
       state.message = "";
@@ -121,6 +121,6 @@ export const userSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { resetUser, resetState } = userSlice.actions;
+export const { resetUserState } = userSlice.actions;
 
 export default userSlice.reducer;

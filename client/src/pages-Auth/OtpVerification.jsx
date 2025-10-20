@@ -19,8 +19,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
-import { otpVerification, resetState, resetUser } from '@/feature/authSlice'
+import { otpVerification, resetAuthState, resetUser } from '@/feature/authSlice'
 import { RouteResetPassword, RouteSignIn } from './../helper/RouteName';
+import { resetUserState } from '@/feature/userSlice'
 
 function OtpVerification() {
 
@@ -55,7 +56,8 @@ function OtpVerification() {
 
       toast.success(response.message)
       form.reset()
-      dispatch(resetState())
+      dispatch(resetAuthState())
+      dispatch(resetUserState())
       dispatch(resetUser())
       navigate(RouteResetPassword)
 

@@ -5,24 +5,80 @@ import { fileURLToPath } from "url";
 import Auth from "../modal/authModal.js";
 import { errorHandlerHelper } from "../helper/errorHandlerHelper.js";
 import User from "../modal/userModal.js";
+import cloudinary from "../config/cloudnary.js";
 
-// Fix for __dirname in ES moduless
+// Fix for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Helper function to delete image from Cloudinary
+const deleteImageFromCloudinary = async (imagePublicId, imageUrl) => {
+  try {
+    // If we have the public_id, use it directly
+    if (imagePublicId) {
+      const deleteResult = await cloudinary.uploader.destroy(imagePublicId);
+      console.log("✅ Cloudinary image deleted:", imagePublicId, deleteResult);
+      return deleteResult;
+    }
+
+    // If no public_id but we have a Cloudinary URL, extract it
+    if (imageUrl && imageUrl.includes("cloudinary")) {
+      const urlParts = imageUrl.split("/");
+      const folderIndex = urlParts.indexOf("blogg-applications");
+      if (folderIndex !== -1) {
+        const filename = urlParts[folderIndex + 1].split(".")[0];
+        const extractedPublicId = `blogg-applications/${filename}`;
+        const deleteResult = await cloudinary.uploader.destroy(
+          extractedPublicId
+        );
+        console.log(
+          "✅ Cloudinary image deleted (extracted):",
+          extractedPublicId,
+          deleteResult
+        );
+        return deleteResult;
+      }
+    }
+  } catch (err) {
+    console.error("❌ Failed to delete from Cloudinary:", err.message);
+  }
+};
+
+// Helper function to delete all files from uploads folder
+const cleanUploadsFolder = async () => {
+  try {
+    const uploadsDir = path.join(__dirname, "..", "uploads");
+    const files = await fs.promises.readdir(uploadsDir);
+
+    for (const file of files) {
+      // Skip .gitkeep and system files
+      if (file !== ".gitkeep" && file !== ".DS_Store") {
+        const filePath = path.join(uploadsDir, file);
+        try {
+          await fs.promises.unlink(filePath);
+          console.log("✅ Deleted file from uploads:", file);
+        } catch (unlinkErr) {
+          console.error("Failed to delete file:", file, unlinkErr.message);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Could not clean uploads directory:", err.message);
+  }
+};
+
 // Show Single user profile
-const showUser = async (req, res) => {
+const showUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
 
     const user = await User.findById(userId);
     if (!user) {
-      return next(errorHandlerHelper(409, "User not Founded"));
+      return next(errorHandlerHelper(404, "User not Found"));
     }
     if (req.user.id !== userId) {
-      return errorHandlerHelper(
-        403,
-        "You are not authorized to access this user"
+      return next(
+        errorHandlerHelper(403, "You are not authorized to access this user")
       );
     }
     // Respond with user data
@@ -47,7 +103,7 @@ const showallusers = async (req, res, next) => {
 
     // Check if users exist
     if (!users || users.length === 0) {
-      return next(handleError(404, "Users Not Found"));
+      return next(errorHandlerHelper(404, "Users Not Found"));
     }
 
     // Return all users
@@ -57,7 +113,7 @@ const showallusers = async (req, res, next) => {
       data: users,
     });
   } catch (error) {
-    return next(handleError(500, "Server Error"));
+    return next(errorHandlerHelper(500, "Server Error"));
   }
 };
 
@@ -80,24 +136,28 @@ const delUser = async (req, res, next) => {
       );
     }
 
-    // Delete associated auth and session data
-    await Auth.deleteMany({ user: userId });
+    console.log("=== USER DELETION PROCESS STARTED ===");
+    console.log("Deleting user:", user.email);
 
-    // Delete user's image from the server (if it exists)
+    // Delete image from Cloudinary
     if (user.image) {
-      const imagePath = path.join(__dirname, "..", "uploads", user.image);
-      try {
-        await fs.promises.access(imagePath, fs.constants.F_OK); // Check if file exists
-        await fs.promises.unlink(imagePath); // Delete file
-        console.log("Image deleted successfully:", imagePath);
-      } catch (err) {
-        console.error(`Error deleting image at ${imagePath}:`, err);
-      }
+      console.log("Deleting image from Cloudinary...");
+      await deleteImageFromCloudinary(user.imagePublicId, user.image);
     }
+
+    // Delete associated auth data
+    await Auth.deleteMany({ user: userId });
+    console.log("✅ Auth records deleted");
 
     // Delete user from DB
     await user.deleteOne();
-    // Clear cookie
+    console.log("✅ User deleted from database");
+
+    // Clean uploads folder
+    console.log("Cleaning uploads folder...");
+    await cleanUploadsFolder();
+
+    // Clear cookies
     res.clearCookie("access_token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -111,13 +171,15 @@ const delUser = async (req, res, next) => {
       path: "/",
     });
 
+    console.log("=== USER DELETION PROCESS COMPLETED ===");
+
     return res.status(200).json({
       status: true,
       message: "User Deleted Successfully",
     });
   } catch (error) {
     console.error("Error in delUser:", error);
-    return next(errorHandlerHelperr(500, "Server Error"));
+    return next(errorHandlerHelper(500, "Server Error"));
   }
 };
 
@@ -131,27 +193,31 @@ const delAllusers = async (req, res, next) => {
       return next(errorHandlerHelper(404, "Users Not Found"));
     }
 
+    console.log("=== DELETE ALL USERS PROCESS STARTED ===");
+    console.log(`Deleting ${users.length} users...`);
+
     // Loop through all users and perform cleanup
     for (const user of users) {
-      // Delete user's image if it exists
+      console.log(`Processing user: ${user.email}`);
+
+      // Delete user's image from Cloudinary
       if (user.image) {
-        const imagePath = path.join(__dirname, "..", "uploads", user.image);
-        try {
-          await fs.promises.access(imagePath, fs.constants.F_OK);
-          await fs.promises.unlink(imagePath);
-          console.log("Image deleted successfully:", imagePath);
-        } catch (err) {
-          console.error(`Error deleting image at ${imagePath}:`, err);
-        }
+        await deleteImageFromCloudinary(user.imagePublicId, user.image);
       }
 
-      // Delete associated session and auth records
+      // Delete associated auth records
       await Auth.deleteMany({ user: user._id });
-
-      // Delete the user
-      await User.deleteMany({ _id: user._id });
     }
-    // Clear cookie
+
+    // Delete all users from database
+    await User.deleteMany({});
+    console.log("✅ All users deleted from database");
+
+    // Clean entire uploads folder
+    console.log("Cleaning uploads folder...");
+    await cleanUploadsFolder();
+
+    // Clear cookies
     res.clearCookie("access_token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -164,12 +230,15 @@ const delAllusers = async (req, res, next) => {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
     });
+
+    console.log("=== DELETE ALL USERS PROCESS COMPLETED ===");
+
     return res.status(200).json({
       status: true,
       message: "All Users Deleted Successfully",
     });
   } catch (error) {
-    console.error("Error in delAll:", error);
+    console.error("Error in delAllusers:", error);
     return next(errorHandlerHelper(500, "Server Error"));
   }
 };
@@ -178,43 +247,94 @@ const updateUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
     const { name, email, age } = req.body;
-    const newImage = req.file?.filename; // Get new uploaded image (if any)
+    const imageFile = req.file;
 
-    // Find user by ID
     const user = await User.findById(userId);
     if (!user) {
       return next(errorHandlerHelper(404, "User Not Found"));
     }
 
-    // Authorization: Only user or admin can update
+    // Authorization check
     if (!req.user || (req.user.id !== userId && req.user.role !== "admin")) {
       return next(
         errorHandlerHelper(403, "You are not authorized to update this user")
       );
     }
 
-    // Prepare fields for update
     const updatedData = {};
     if (name) updatedData.name = name;
     if (age) updatedData.age = age;
     if (email) updatedData.email = email;
-    if (newImage) updatedData.image = newImage;
 
-    // Delete old image if a new one is uploaded
-    if (newImage && user.image && user.image !== newImage) {
-      const oldImagePath = path.join(__dirname, "..", "uploads", user.image);
+    // Handle new image upload
+    if (imageFile && imageFile.path) {
       try {
-        await fs.promises.access(oldImagePath, fs.constants.F_OK);
-        await fs.promises.unlink(oldImagePath);
-        console.log("Old image deleted:", oldImagePath);
-      } catch (err) {
-        console.error("Error deleting old image:", err.message);
+        console.log("=== IMAGE UPDATE PROCESS STARTED ===");
+        console.log("New image file path:", imageFile.path);
+        console.log("Current user image:", user.image);
+        console.log("Current user imagePublicId:", user.imagePublicId);
+
+        // 1. Upload new image to Cloudinary FIRST
+        const uploadResult = await cloudinary.uploader.upload(imageFile.path, {
+          folder: "blogg-applications",
+          resource_type: "image",
+        });
+
+        if (!uploadResult || !uploadResult.secure_url) {
+          return next(errorHandlerHelper(500, "Image upload failed"));
+        }
+
+        console.log(
+          "New image uploaded to Cloudinary:",
+          uploadResult.secure_url
+        );
+        console.log("New image public_id:", uploadResult.public_id);
+
+        // 2. Delete old image from Cloudinary
+        if (user.image) {
+          console.log("Deleting old image from Cloudinary...");
+          await deleteImageFromCloudinary(user.imagePublicId, user.image);
+        }
+
+        // 3. Delete the NEWLY uploaded local file (the one multer just created)
+        console.log("Deleting newly uploaded local file...");
+        try {
+          await fs.promises.unlink(imageFile.path);
+          console.log("✅ New local file deleted:", imageFile.path);
+        } catch (err) {
+          console.error("❌ Failed to delete new local file:", err.message);
+        }
+
+        // 4. Clean uploads folder
+        console.log("Cleaning uploads folder...");
+        await cleanUploadsFolder();
+
+        // 5. Update user data with new image info
+        updatedData.image = uploadResult.secure_url;
+        updatedData.imagePublicId = uploadResult.public_id;
+
+        console.log("=== IMAGE UPDATE PROCESS COMPLETED ===");
+      } catch (uploadError) {
+        console.error("❌ Error during image upload process:", uploadError);
+
+        // Clean up the uploaded file if something went wrong
+        if (imageFile && imageFile.path) {
+          try {
+            await fs.promises.unlink(imageFile.path);
+            console.log("Cleaned up failed upload file");
+          } catch (cleanupErr) {
+            console.error("Failed to cleanup file:", cleanupErr);
+          }
+        }
+
+        return next(
+          errorHandlerHelper(500, "Image update failed: " + uploadError.message)
+        );
       }
     }
 
-    // Update user in DB
     const updatedUser = await User.findByIdAndUpdate(userId, updatedData, {
-      new: true, // Return updated document
+      new: true,
     });
 
     return res.status(200).json({
@@ -224,7 +344,7 @@ const updateUser = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error in updateUser:", error);
-    return next(errorHandlerHelper(500, "Server Error"));
+    return next(errorHandlerHelper(500, "Server Error: " + error.message));
   }
 };
 

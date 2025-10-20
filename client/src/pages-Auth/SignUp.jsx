@@ -23,7 +23,7 @@ import { RouteSignIn, RouteSignUp, RouteVerification } from './../helper/RouteNa
 import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
-import { registerUser } from '@/feature/authSlice'
+import { registerUser, resetAuthState } from '@/feature/authSlice'
 import GoogleLogin from '@/components/GoogleLogin'
 
 
@@ -94,6 +94,7 @@ function SignUp() {
 
       toast.success(response.message)
       form.reset()
+      dispatch(resetAuthState())
       setTimeout(() => {
         navigate(RouteVerification)
       }, 2000)

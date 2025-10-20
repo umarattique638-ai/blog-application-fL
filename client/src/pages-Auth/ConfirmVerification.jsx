@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Spinner from '@/components/Spinner';
 import { toast } from 'react-toastify';
-import { resetState, resetUser, verificationUser } from '@/feature/authSlice';
+import { resetAuthState, resetUser, verificationUser } from '@/feature/authSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RouteSignIn } from '@/helper/RouteName';
+import { resetUserState } from '@/feature/userSlice';
 
 function ConfirmVerification() {
   const navigate = useNavigate();
@@ -25,8 +26,9 @@ function ConfirmVerification() {
         }
 
         setStatus('success');
-        dispatch(resetUser());
-        dispatch(resetState());
+        dispatch(resetAuthState())
+        dispatch(resetUserState())
+        dispatch(resetUser())
 
         setTimeout(() => {
           navigate(RouteSignIn);

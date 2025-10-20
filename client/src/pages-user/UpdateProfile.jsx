@@ -24,8 +24,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
 
-import { updateUser, resetState } from '@/feature/userSlice'
-import { resetUser, setUser } from '@/feature/authSlice'
+import { resetUserState, updateUser } from '@/feature/userSlice'
+import { setUser } from '@/feature/authSlice'
 
 
 function UpdateProfile() {
@@ -116,7 +116,7 @@ function UpdateProfile() {
       const response = await dispatch(updateUser({ id: crUser._id, formData })).unwrap()
 
       toast.success(response.message)
-      dispatch(resetState())
+      dispatch(resetUserState())
       // dispatch(resetUser())
       // setTimeout(() => {
       //   navigate(RouteSignIn)

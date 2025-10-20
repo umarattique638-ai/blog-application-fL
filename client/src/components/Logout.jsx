@@ -1,9 +1,10 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
-import { logoutUser, resetState, resetUser } from '@/feature/authSlice'
+import { logoutUser, resetAuthState, resetUser } from '@/feature/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { RouteSignIn } from '@/helper/RouteName'
+import { resetUserState } from '@/feature/userSlice';
 
 function Logout() {
 
@@ -14,7 +15,8 @@ function Logout() {
     try {
       const res = await dispatch(logoutUser()).unwrap()
       toast.success(res.message)
-      dispatch(resetState())
+      dispatch(resetAuthState())
+      dispatch(resetUserState())
       dispatch(resetUser())
       navigate(RouteSignIn)
 

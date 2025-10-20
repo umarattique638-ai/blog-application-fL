@@ -23,7 +23,7 @@ import { RouteForgotPassword, RouteIndex, RouteSignUp } from './../helper/RouteN
 import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
-import { loginUser, setUser } from '@/feature/authSlice'
+import { loginUser, resetAuthState, setUser } from '@/feature/authSlice'
 import GoogleLogin from '@/components/GoogleLogin'
 
 
@@ -67,6 +67,7 @@ function SignIn() {
       toast.success(response.message)
       form.reset()
       dispatch(setUser(response.user.user))
+      dispatch(resetAuthState())
       navigate(RouteIndex)
 
 

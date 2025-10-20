@@ -5,6 +5,7 @@ import Auth from "../modal/authModal.js";
 import { errorHandlerHelper } from "../helper/errorHandlerHelper.js";
 import userVerifyEmail from "../mail/userVerifyEmail.js";
 import optVerifyEmail from "../mail/optVerifyEmail.js";
+import cloudinary from "../config/cloudnary.js";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -22,30 +23,52 @@ export const registerUser = async (req, res, next) => {
       return next(errorHandlerHelper(400, "Age must be a number"));
     }
 
-    const userImage = req.file ? req.file.filename : null;
-    if (!userImage) {
+    if (!req.file || !req.file.path) {
       return next(errorHandlerHelper(400, "Please upload an image"));
     }
+
+    const userImagePath = req.file.path;
+    console.log("User Image Path", userImagePath);
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return next(errorHandlerHelper(409, "User already registered"));
     }
 
-    const hashPassword = bcryptjs.hashSync(password, 10);
+    // Upload image to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(userImagePath, {
+      folder: "blogg-applications",
+      resource_type: "auto",
+    });
 
+    if (!uploadResult || !uploadResult.secure_url) {
+      return next(errorHandlerHelper(500, "Image upload failed"));
+    }
+
+    // Delete the local file after successful Cloudinary upload
+    try {
+      await fs.promises.unlink(userImagePath);
+      console.log("Local file deleted after upload:", userImagePath);
+    } catch (err) {
+      console.error("Failed to delete local file:", err.message);
+    }
+
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+
+    // Create user with uploaded image URL AND public_id
     const newUser = await User.create({
       name,
       email,
       role: role || "user",
-      image: userImage,
+      image: uploadResult.secure_url,
+      imagePublicId: uploadResult.public_id, // ✅ ADDED THIS
       age,
       isVerified: false,
     });
 
     await Auth.create({
       user: newUser._id,
-      password: hashPassword,
+      password: hashedPassword,
     });
 
     const token = jwt.sign(
@@ -54,7 +77,7 @@ export const registerUser = async (req, res, next) => {
       { expiresIn: "30m" }
     );
 
-    // Send email for verification
+    // Send verification email
     userVerifyEmail(email, token);
 
     return res.status(201).json({

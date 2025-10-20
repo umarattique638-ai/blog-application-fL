@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Button } from "./components/ui/button"
-import { RouteConfirmVerification, RouteForgotPassword, RouteIndex, RouteOtpVerification, RouteResetPassword, RouteSignIn, RouteSignUp, RouteUpdateUserProfile, RouteVerification } from "./helper/RouteName"
+import { RouteAddCategory, RouteConfirmVerification, RouteDashBoardCategory, RouteEditCategory, RouteForgotPassword, RouteIndex, RouteOtpVerification, RouteResetPassword, RouteSignIn, RouteSignUp, RouteUpdateUserProfile, RouteVerification } from "./helper/RouteName"
 import Index from "./Layout/Index"
 import Layout from "./Layout/Layout"
 import SignUp from "./pages-Auth/SignUp"
@@ -13,6 +13,9 @@ import ConfirmVerification from "./pages-Auth/confirmVerification"
 import Profile from "./pages-user/UpdateProfile"
 import UpdateProfile from "./pages-user/UpdateProfile"
 import ShowProfile from "./pages-user/ShowProfile"
+import AddCategory from "./pages-category/AddCategory"
+import EditCatigory from './pages-category/EditCatigory';
+import DashbardCatigory from './pages-category/DashbardCatigory';
 
 
 function App() {
@@ -27,6 +30,9 @@ function App() {
             <Route index element={<Index />} />
             <Route path="showuser/:id" element={<ShowProfile />} />
             <Route path="updateuser/:id" element={<UpdateProfile />} />
+            <Route path={RouteAddCategory} element={<AddCategory />} />
+            <Route path={RouteEditCategory()} element={<EditCatigory />} />
+            <Route path={RouteDashBoardCategory} element={<DashbardCatigory />} />
 
           </Route>
 

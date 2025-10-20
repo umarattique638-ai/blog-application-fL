@@ -3,10 +3,10 @@ import { Button } from './ui/button'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
-import { resetState, resetUser } from '@/feature/authSlice'
+import { resetAuthState, resetUser } from '@/feature/authSlice'
 import { RouteSignIn } from '@/helper/RouteName'
 import Spinner from './Spinner'
-import { deleteUser } from '@/feature/userSlice'
+import { deleteUser, resetUserState } from '@/feature/userSlice'
 
 
 function DeleteOneUser({ userId }) {
@@ -20,8 +20,9 @@ function DeleteOneUser({ userId }) {
       const response = await dispatch(deleteUser(userId)).unwrap()
 
       toast.success(response.message)
+      dispatch(resetAuthState())
+      dispatch(resetUserState())
       dispatch(resetUser())
-      dispatch(resetState())
 
       navigate(RouteSignIn)
     } catch (error) {

@@ -8,3 +8,14 @@ export const RouteVerification = "/verification/";
 export const RouteConfirmVerification = "/confirm-verification/:token";
 
 export const RouteUpdateUserProfile = "/updateuser/:id";
+
+export const RouteDashBoardCategory = "/categories";
+
+export const RouteAddCategory = "/category/add";
+export const RouteEditCategory = (id) => {
+  if (id) {
+    return `/category/update/${id}`;
+  } else {
+    return `/category/update/id`;
+  }
+};

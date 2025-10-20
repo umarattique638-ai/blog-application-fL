@@ -12,13 +12,13 @@ function Layout() {
         <Header />
         <AppSidebar />
 
-        <main className='  w-full min-h-screen'>
-          <div className='w-full min-h-[calc(100vh-40px)] '>
+        <main className='  w-full min-h-screen '>
+          <div className='w-full min-h-[calc(100vh-35px)] pt-30 pl-10 pr-10'>
 
             <Outlet />
-            <Footer />
-          </div>
 
+          </div>
+          <Footer />
         </main>
 
       </SidebarProvider>

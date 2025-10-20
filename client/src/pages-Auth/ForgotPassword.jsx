@@ -21,7 +21,8 @@ import { RouteOtpVerification, RouteSignIn } from './../helper/RouteName';
 import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
-import { forgotPassword, resetState, resetUser } from '@/feature/authSlice'
+import { forgotPassword, resetAuthState, resetUser } from '@/feature/authSlice'
+import { resetUserState } from '@/feature/userSlice'
 function ForgotPassword() {
 
   const navigate = useNavigate()
@@ -55,7 +56,8 @@ function ForgotPassword() {
       const response = await dispatch(forgotPassword(formData)).unwrap()
 
       toast.success(response.message)
-      dispatch(resetState())
+      dispatch(resetAuthState())
+      dispatch(resetUserState())
       dispatch(resetUser())
       form.reset()
       navigate(RouteOtpVerification)
