@@ -201,9 +201,7 @@ export const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.user = action.payload.user.user; // <-- Save the actual user object here
-        state.accessToken = action.payload.user.accessToken; // optional, if you want to save token in state
-        state.refreshToken = action.payload.user.refreshToken;
+        state.user = action.payload.user.user; // <-- Save
         state.message = action.payload.message || "Login successful";
       })
       .addCase(loginUser.rejected, (state, action) => {

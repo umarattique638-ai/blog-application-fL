@@ -7,7 +7,11 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const registerUser = async (formData) => {
   try {
-    const response = await axios.post(`${baseAuthURL}/register`, formData);
+    const response = await axios.post(`${baseAuthURL}/register`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     await sleep(1000); // ⏳ Add delay
     return response.data;
   } catch (error) {

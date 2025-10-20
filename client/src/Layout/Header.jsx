@@ -27,12 +27,9 @@ export default function Header() {
   const userId = user?._id;
   const name = user?.name;
   const email = user?.email;
-  const userImage = user?.image;
 
-  // Fallback image if no profile image is set
-  const baseAuthURL = "http://localhost:8000/uploads/";
-  const imageUrl = userImage
-    ? `${baseAuthURL}${userImage}`
+  const imageUrl = user?.image?.includes("cloudinary.com")
+    ? user.image
     : "https://github.com/shadcn.png";
 
   return (
@@ -51,11 +48,11 @@ export default function Header() {
       </div>
 
       {/* User Menu */}
-      <div>
+      <div className='hover:cursor-pointer'>
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Avatar>
+              <Avatar className='hover:cursor-pointer'>
                 <AvatarImage
                   src={imageUrl}
                   alt={name || "User"}
@@ -67,7 +64,7 @@ export default function Header() {
               </Avatar>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent>
+            <DropdownMenuContent className='hover:cursor-pointer'>
               <DropdownMenuLabel>
                 <Link to={RouteIndex}>My Account</Link>
                 <p className='text-xs font-normal'>{name}</p>
@@ -76,14 +73,14 @@ export default function Header() {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild className='hover:cursor-pointer'>
                 <Link to={`/showuser/${userId}`} className="flex items-center gap-2">
                   <FaRegUser />
                   Profile
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild className='hover:cursor-pointer'>
                 <Link to="/add-post" className="flex items-center gap-2">
                   <IoMdAdd />
                   Add Post
@@ -92,7 +89,7 @@ export default function Header() {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem>
+              <DropdownMenuItem className='hover:cursor-pointer'>
                 <MdLogin />
                 <Logout />
               </DropdownMenuItem>

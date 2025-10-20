@@ -21,16 +21,15 @@ function ShowProfile() {
 
 
   const crUser = user // Handle nested structure
-  const userImage = crUser?.image;
   const userId = crUser?._id;
   const name = crUser?.name;
   const email = crUser?.email;
   const age = crUser?.age;
 
-  console.log("Cr name ", crUser)
 
-  const baseAuthURL = "http://localhost:8000/uploads/";
-  const imageUrl = userImage ? `${baseAuthURL}${userImage}` : "https://github.com/shadcn.png";
+  const imageUrl = user?.image?.includes("cloudinary.com")
+    ? user.image
+    : "https://github.com/shadcn.png";
 
   const [imagePreview, setImagePreview] = useState(imageUrl)
   return (

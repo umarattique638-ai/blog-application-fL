@@ -24,16 +24,19 @@ import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
 
-import { updateUser } from '@/feature/userSlice'
-import { resetState, resetUser } from '@/feature/authSlice'
+import { updateUser, resetState } from '@/feature/userSlice'
+import { resetUser, setUser } from '@/feature/authSlice'
 
 
 function UpdateProfile() {
 
 
   const navigate = useNavigate()
-  const { user, success, error, message, loading, } = useSelector((state) => state.auth)
+  const { user, } = useSelector((state) => state.auth)
+  const { success, error, message, loading, } = useSelector((state) => state.user)
+
   const dispatch = useDispatch()
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   const crUser = user // Handle nested structure
@@ -43,10 +46,10 @@ function UpdateProfile() {
   const email = crUser?.email;
   const age = crUser?.age;
 
-  console.log("Cr name ", crUser)
 
-  const baseAuthURL = "http://localhost:8000/uploads/";
-  const imageUrl = userImage ? `${baseAuthURL}${userImage}` : "https://github.com/shadcn.png";
+  const imageUrl = user?.image?.includes("cloudinary.com")
+    ? user.image
+    : "https://github.com/shadcn.png";
 
   const [imagePreview, setImagePreview] = useState(imageUrl)
 
@@ -89,9 +92,9 @@ function UpdateProfile() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: crUser.name || "",
-      email: crUser.email || "",
-      age: crUser.age || "",
+      name: crUser?.name || "",
+      email: crUser?.email || "",
+      age: crUser?.age || "",
       image: undefined
 
     },
@@ -100,6 +103,8 @@ function UpdateProfile() {
 
   async function onSubmit(values) {
     try {
+      setIsSubmitting(true); // 🔁 start loader
+
       const formData = new FormData()
       formData.append("name", values.name)
       formData.append("email", values.email)
@@ -112,25 +117,27 @@ function UpdateProfile() {
 
       toast.success(response.message)
       dispatch(resetState())
-      dispatch(resetUser())
-      setTimeout(() => {
-        navigate(RouteSignIn)
-      }, 1000)
+      // dispatch(resetUser())
+      // setTimeout(() => {
+      //   navigate(RouteSignIn)
+      // }, 1000)
       form.reset()
-
+      dispatch(setUser(response.updatedUser))
+      console.log(response.updatedUser)
 
 
 
     }
     catch (error) {
       toast.error(error)
+    } finally {
+      setIsSubmitting(false); // 🔁 start loader
+
     }
 
 
   }
-  if (loading) {
-    return <Spinner />
-  }
+
 
   const handleImage = (e, field) => {
     const file = e.target.files?.[0]
@@ -144,7 +151,9 @@ function UpdateProfile() {
     }
     reader.readAsDataURL(file)
   }
-
+  if (loading || isSubmitting) {
+    return <Spinner />;
+  }
 
   return (
     <>
@@ -174,11 +183,13 @@ function UpdateProfile() {
                 <FormField
                   control={form.control}
                   name="email"
+
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter Your Email" {...field} />
+                        <Input placeholder="Enter Your Email" {...field} readOnly />
+
                       </FormControl>
 
                       <FormMessage />
