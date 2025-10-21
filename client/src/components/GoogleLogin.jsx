@@ -20,7 +20,6 @@ function GoogleLogin() {
       const googleResponse = await signInWithPopup(auth, provider);
       const user = googleResponse.user;
 
-      console.log("user Fg", user)
       const formData = {
         name: user.displayName || "No Name",
         email: user.email,

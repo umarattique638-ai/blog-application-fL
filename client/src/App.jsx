@@ -31,7 +31,7 @@ function App() {
             <Route path="showuser/:id" element={<ShowProfile />} />
             <Route path="updateuser/:id" element={<UpdateProfile />} />
             <Route path={RouteAddCategory} element={<AddCategory />} />
-            <Route path={RouteEditCategory()} element={<EditCatigory />} />
+            <Route path="/category/update/:id" element={<EditCatigory />} />
             <Route path={RouteDashBoardCategory} element={<DashbardCatigory />} />
 
           </Route>

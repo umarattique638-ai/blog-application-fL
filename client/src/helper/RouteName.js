@@ -9,8 +9,8 @@ export const RouteConfirmVerification = "/confirm-verification/:token";
 
 export const RouteUpdateUserProfile = "/updateuser/:id";
 
+// Catigories
 export const RouteDashBoardCategory = "/categories";
-
 export const RouteAddCategory = "/category/add";
 export const RouteEditCategory = (id) => {
   if (id) {

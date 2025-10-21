@@ -8,93 +8,86 @@ import { Button } from "@/components/ui/button"
 import { Card } from '@/components/ui/card'
 import { Link, useNavigate } from 'react-router-dom'
 
-
-import { useDispatch, useSelector } from 'react-redux'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
 import { loginUser, setUser } from '@/feature/authSlice'
+import { RiDeleteBin2Line } from "react-icons/ri";
+import { FaRegEdit } from "react-icons/fa";
+import { RouteAddCategory, RouteEditCategory } from '@/helper/RouteName'
+import { useDispatch, useSelector } from 'react-redux'
+import { showAllCatigory } from '@/feature/catigorySlice'
+import DeleteSingleCategory from './DeleteSingleCategory'
+
+
 function DashbardCatigory() {
 
   const navigate = useNavigate()
-  const { user, success, error, message, loading, } = useSelector((state) => state.auth)
+  const { catigorys, loading, error } = useSelector(state => state.catigory);
   const dispatch = useDispatch()
 
 
+  useEffect(() => {
+    dispatch(showAllCatigory());
+  }, [dispatch]);
 
-  const formSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(4, {
-      message: "Password must be at least 4 characters.",
-    }),
-  })
+  const allCatigoys = catigorys?.categories || []
 
 
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  })
 
-
-  async function onSubmit(values) {
-    try {
-      const formData = {
-        email: values.email,
-        password: values.password
-      }
-
-
-      const response = await dispatch(loginUser(formData)).unwrap()
-
-      toast.success(response.message)
-      form.reset()
-      dispatch(setUser(response.user.user))
-      navigate(RouteIndex)
-
-
-    }
-    catch (error) {
-      toast.error(error)
-    }
-  }
   if (loading) {
     return <Spinner />
   }
 
   return (
     <>
-      <div>
-        <Card className="px-10">
+      <div className='pt-20'>
+        <Card className="px-10 w-450">
           <div>
-            <Button>Add Catrgory</Button>
+            <Button className="hover:cursor-pointer"><Link to={RouteAddCategory}>Add Catrgory</Link></Button>
           </div>
-          <table className="min-w-full divide-y  divide-gray-200 border border-gray-300 shadow-sm rounded-md overflow-hidden">
-            <thead className="bg-gray-100 dark:bg-gray-800">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                  Category Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                  Category Slug
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200">
-              <tr className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">item 1</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">item-1</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <button className="text-red-600 hover:text-red-800 font-medium">Delete</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+          <Table className="w-full text-sm text-left text-gray-700">
+            <TableHeader className="bg-gray-100">
+              <TableRow>
+                <TableHead className="px-4 py-2 uppercase tracking-wide font-semibold text-gray-600">Name</TableHead>
+                <TableHead className="px-4 py-2 uppercase tracking-wide font-semibold text-gray-600">Slug</TableHead>
+                <TableHead className="px-4 py-2 uppercase tracking-wide font-semibold text-gray-600">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {allCatigoys.map((cat) => (
+                <TableRow key={cat._id} className="border-b hover:bg-gray-50 transition-colors duration-200">
+                  <TableCell className="px-4 py-2 font-medium text-gray-800">
+                    {cat.name}
+                  </TableCell>
+                  <TableCell className="px-4 py-2 text-gray-600">
+                    {cat.slug}
+                  </TableCell>
+                  <TableCell className="px-4 py-2 flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="text-green-600 border-green-600 hover:bg-green-100 hover:cursor-pointer hover:text-green-800 transition"
+                    >
+                      <Link to={RouteEditCategory(cat._id)}><FaRegEdit /></Link>
+                    </Button>
+                    <DeleteSingleCategory delId={cat._id} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+
 
         </Card>
       </div>
