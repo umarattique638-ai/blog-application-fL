@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '@/components/Spinner'
 import { toast } from 'react-toastify'
 import { RouteDashBoardCategory } from '@/helper/RouteName'
-import { showCatigory, updateCatigory } from '@/feature/catigorySlice'
+import { resetCategoryState, showAllCatigory, showCatigory, updateCatigory } from '@/feature/catigorySlice'
 import slugify from 'slugify'
 
 
@@ -61,23 +61,32 @@ function EditCatigory() {
 
 
   async function onSubmit(values) {
-    try {
-      const formData = {
-
-        name: values.name,
-        slug: values.slug
-      }
-
-      const response = await dispatch(updateCatigory({ id: catID, formData })).unwrap()
-      toast.success(response.message)
-      form.reset()
-      dispatch(resetCategoryState())
-      navigate(RouteDashBoardCategory)
+    const formData = {
+      name: values.name,
+      slug: values.slug
     }
-    catch (error) {
-      toast.error(error)
+
+    try {
+      const response = await dispatch(updateCatigory({ id: catID, formData })).unwrap();
+
+      toast.success(response.message);
+
+      // Reset form only after successful update
+      form.reset();
+
+      // Navigate before resetting the category state
+      navigate(RouteDashBoardCategory);
+
+      // Reset Redux state AFTER navigation
+      dispatch(resetCategoryState());
+      dispatch(showAllCatigory())
+
+    } catch (error) {
+      console.error("Update error:", error);
+      toast.error(error?.message || "Failed to update category");
     }
   }
+
 
 
   // First Use Effect to get Gata for database

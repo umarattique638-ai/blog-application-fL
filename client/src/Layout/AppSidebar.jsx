@@ -19,8 +19,19 @@ import { FaRegUser } from "react-icons/fa";
 import { GoDot } from "react-icons/go";
 import { FaReact } from "react-icons/fa";
 import { RouteDashBoardCategory } from "@/helper/RouteName";
+import { useDispatch, useSelector } from "react-redux";
+import { showAllCatigory } from "@/feature/catigorySlice";
+import { useEffect, useState } from "react";
 
 function AppSidebar() {
+  const { catigorys } = useSelector(state => state.catigory);
+  const dispatch = useDispatch()
+
+  const data = catigorys?.categories || [];
+
+  useEffect(() => {
+    dispatch(showAllCatigory())
+  }, [dispatch])
 
   let arr = [{
     to: "", label: "Home", icons: <IoHomeOutline />
@@ -32,7 +43,6 @@ function AppSidebar() {
     to: "", label: "User", icons: <FaRegUser />
   }]
 
-  let arr2 = [{ to: "", label: "item no 1", icons: <GoDot /> }]
 
   return (
     <Sidebar>
@@ -59,14 +69,14 @@ function AppSidebar() {
         </SidebarGroup>
 
 
-        <SidebarGroup >
+        <SidebarGroup className="pt-15" >
           <SidebarGroupLabel>Catigories</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {arr2.map((items) => (
-                <SidebarMenuItem key={items.label} >
+              {data.map((items) => (
+                <SidebarMenuItem key={items._id} >
                   <SidebarMenuButton asChild>
-                    <Link to={items.to}>{items.icons}{items.label}</Link>
+                    <Link > {items.name}</Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

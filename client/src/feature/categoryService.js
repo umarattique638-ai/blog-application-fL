@@ -48,7 +48,7 @@ const showAllCatigory = async () => {
 const deleteCatigory = async (id) => {
   try {
     const response = await axios.delete(
-      `${baseAuthURL}/del-catigory/${id}`,
+      `${baseAuthURL}/del-catigory/${id}?confirm=true`,
 
       {
         withCredentials: true,

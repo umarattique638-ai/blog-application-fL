@@ -21,7 +21,7 @@ import { toast } from 'react-toastify'
 import { RouteDashBoardCategory } from '@/helper/RouteName'
 import { useDispatch, useSelector } from 'react-redux'
 import slugify from "slugify"
-import { addCatigory, resetCategoryState } from '@/feature/catigorySlice'
+import { addCatigory, resetCategoryState, showAllCatigory } from '@/feature/catigorySlice'
 
 
 function AddCategory() {
@@ -71,6 +71,7 @@ function AddCategory() {
       toast.success(response.message)
       form.reset()
       dispatch(resetCategoryState())
+      dispatch(showAllCatigory())
       navigate(RouteDashBoardCategory)
 
 

@@ -7,7 +7,10 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 
 function Layout() {
   return (
+
     <>
+
+
       <SidebarProvider >
         <Header />
         <AppSidebar />

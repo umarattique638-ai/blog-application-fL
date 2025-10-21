@@ -76,7 +76,7 @@ const showCategory = async (req, res, next) => {
 const showAllCategory = async (req, res, next) => {
   try {
     // Fetch all categories
-    const categories = await Category.find();
+    const categories = await Category.find().sort({ name: 1 }); // 1 = ascending
 
     return res.status(200).json({
       status: true,
@@ -92,6 +92,11 @@ const delCategory = async (req, res, next) => {
   try {
     const categoryId = req.params.id;
 
+    if (!req.query.confirm || req.query.confirm !== "true") {
+      return next(
+        errorHandlerHelper(400, "Confirmation required to delete This category")
+      );
+    }
     // Optional: Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(categoryId)) {
       return next(errorHandlerHelper(400, "Invalid category ID"));

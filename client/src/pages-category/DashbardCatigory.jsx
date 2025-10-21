@@ -35,8 +35,13 @@ function DashbardCatigory() {
   const dispatch = useDispatch()
 
 
-  useEffect(() => {
+
+  const showFreshData = () => {
     dispatch(showAllCatigory());
+  }
+
+  useEffect(() => {
+    showFreshData()
   }, [dispatch]);
 
   const allCatigoys = catigorys?.categories || []
@@ -80,7 +85,7 @@ function DashbardCatigory() {
                     >
                       <Link to={RouteEditCategory(cat._id)}><FaRegEdit /></Link>
                     </Button>
-                    <DeleteSingleCategory delId={cat._id} />
+                    <DeleteSingleCategory delId={cat._id} onSuccessDelete={showFreshData} />
                   </TableCell>
                 </TableRow>
               ))}
