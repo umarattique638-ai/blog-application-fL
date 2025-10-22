@@ -18,7 +18,7 @@ import { FaRegComments } from "react-icons/fa6";
 import { FaRegUser } from "react-icons/fa";
 import { GoDot } from "react-icons/go";
 import { FaReact } from "react-icons/fa";
-import { RouteDashBoardCategory } from "@/helper/RouteName";
+import { RouteDashBoardBlog, RouteDashBoardCategory } from "@/helper/RouteName";
 import { useDispatch, useSelector } from "react-redux";
 import { showAllCatigory } from "@/feature/catigorySlice";
 import { useEffect, useState } from "react";
@@ -35,7 +35,7 @@ function AppSidebar() {
 
   let arr = [{
     to: "", label: "Home", icons: <IoHomeOutline />
-  }, { to: "", label: "Blogs", icons: <GrBlog /> }, {
+  }, { to: RouteDashBoardBlog, label: "Blogs", icons: <GrBlog /> }, {
     to: RouteDashBoardCategory, label: "Categories", icons: <TbCategory2 />
   }, {
     to: "", label: "Comments", icons: <FaRegComments />

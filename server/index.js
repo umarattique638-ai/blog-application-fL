@@ -9,6 +9,7 @@ import errorHandlerMiddleware from "./middleware/errorHandlerMiddleware.js";
 import authRoute from "./route/authRoute.js";
 import userRoute from "./route/userRoute.js";
 import categoryRoute from "./route/categoryRouter.js";
+import blogRoute from "./route/blogRoute.js";
 
 const app = express();
 dotenv.config();
@@ -28,7 +29,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/category", categoryRoute);
-
+app.use("/api/blog", blogRoute);
 app.use(errorHandlerMiddleware);
 
 mongoose

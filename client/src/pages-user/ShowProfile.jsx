@@ -18,7 +18,7 @@ function ShowProfile() {
   const { user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch()
-
+  console.log(user)
 
   const crUser = user // Handle nested structure
   const userId = crUser?._id;

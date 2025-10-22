@@ -1,0 +1,17 @@
+import { RouteSignIn } from '@/helper/RouteName'
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { Navigate } from 'react-router-dom'
+
+function ProtectedRoute({ children }) {
+  const { user } = useSelector((state) => state.auth)
+
+  if (user) {
+    return children
+  }
+
+
+  return <Navigate to={RouteSignIn} />
+}
+
+export default ProtectedRoute

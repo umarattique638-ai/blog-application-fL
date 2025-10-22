@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Button } from "./components/ui/button"
-import { RouteAddCategory, RouteConfirmVerification, RouteDashBoardCategory, RouteEditCategory, RouteForgotPassword, RouteIndex, RouteOtpVerification, RouteResetPassword, RouteSignIn, RouteSignUp, RouteUpdateUserProfile, RouteVerification } from "./helper/RouteName"
+import { RouteAddBlog, RouteAddCategory, RouteConfirmVerification, RouteDashBoardBlog, RouteDashBoardCategory, RouteEditCategory, RouteForgotPassword, RouteIndex, RouteOtpVerification, RouteResetPassword, RouteSignIn, RouteSignUp, RouteUpdateUserProfile, RouteVerification } from "./helper/RouteName"
 import Index from "./Layout/Index"
 import Layout from "./Layout/Layout"
 import SignUp from "./pages-Auth/SignUp"
@@ -16,6 +16,10 @@ import ShowProfile from "./pages-user/ShowProfile"
 import AddCategory from "./pages-category/AddCategory"
 import EditCatigory from './pages-category/EditCatigory';
 import DashbardCatigory from './pages-category/DashbardCatigory';
+import ProtectedRoute from "./components/ProtectedRoute"
+import AddBlog from "./pages-blog/AddBlog"
+import UpdateBlog from "./pages-blog/UpdateBlog"
+import DashBoardBlog from "./pages-blog/DashBoardBlog"
 
 
 function App() {
@@ -28,11 +32,20 @@ function App() {
           <Route path={RouteIndex} element={<Layout />} >
 
             <Route index element={<Index />} />
-            <Route path="showuser/:id" element={<ShowProfile />} />
-            <Route path="updateuser/:id" element={<UpdateProfile />} />
-            <Route path={RouteAddCategory} element={<AddCategory />} />
-            <Route path="/category/update/:id" element={<EditCatigory />} />
-            <Route path={RouteDashBoardCategory} element={<DashbardCatigory />} />
+
+            {/* User */}
+            <Route path="showuser/:id" element={<ProtectedRoute> <ShowProfile />  </ProtectedRoute>} />
+            <Route path="updateuser/:id" element={<ProtectedRoute> <UpdateProfile /> </ProtectedRoute>} />
+
+            {/* Categories */}
+            <Route path={RouteAddCategory} element={<ProtectedRoute> <AddCategory /> </ProtectedRoute>} />
+            <Route path="/category/update/:id" element={<ProtectedRoute> <EditCatigory /> </ProtectedRoute>} />
+            <Route path={RouteDashBoardCategory} element={<ProtectedRoute> <DashbardCatigory /> </ProtectedRoute>} />
+
+            {/* Blogs */}
+            <Route path={RouteAddBlog} element={<ProtectedRoute> <AddBlog /> </ProtectedRoute>} />
+            <Route path="/blog/update/:id" element={<ProtectedRoute> <UpdateBlog /> </ProtectedRoute>} />
+            <Route path={RouteDashBoardBlog} element={<ProtectedRoute> <DashBoardBlog /> </ProtectedRoute>} />
 
           </Route>
 

@@ -187,9 +187,9 @@ export const loginUser = async (req, res, next) => {
           role: user.role,
           image: user.image,
           isVerified: user.isVerified,
+          accessToken,
+          refreshToken,
         },
-        accessToken,
-        refreshToken,
       },
     });
   } catch (error) {

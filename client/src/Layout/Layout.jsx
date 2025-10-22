@@ -4,8 +4,11 @@ import Footer from './Footer'
 import Header from './Header'
 import AppSidebar from './AppSidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
+import { useSelector } from 'react-redux'
 
 function Layout() {
+  const { user } = useSelector((state) => state.auth)
+
   return (
 
     <>

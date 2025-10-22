@@ -56,7 +56,7 @@ function DashbardCatigory() {
   return (
     <>
       <div className='pt-20'>
-        <Card className="px-10 w-450">
+        <Card className="px-10 ">
           <div>
             <Button className="hover:cursor-pointer"><Link to={RouteAddCategory}>Add Catrgory</Link></Button>
           </div>
@@ -64,9 +64,9 @@ function DashbardCatigory() {
           <Table className="w-full text-sm text-left text-gray-700">
             <TableHeader className="bg-gray-100">
               <TableRow>
-                <TableHead className="px-4 py-2 uppercase tracking-wide font-semibold text-gray-600">Name</TableHead>
+                <TableHead className="px-4 py-2 uppercase tracking-wide font-semibold text-gray-600 ">Name</TableHead>
                 <TableHead className="px-4 py-2 uppercase tracking-wide font-semibold text-gray-600">Slug</TableHead>
-                <TableHead className="px-4 py-2 uppercase tracking-wide font-semibold text-gray-600">Action</TableHead>
+                <TableHead className="px-4 py-2 uppercase tracking-wide font-semibold text-gray-600 text-right pr-12">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -78,14 +78,18 @@ function DashbardCatigory() {
                   <TableCell className="px-4 py-2 text-gray-600">
                     {cat.slug}
                   </TableCell>
-                  <TableCell className="px-4 py-2 flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="text-green-600 border-green-600 hover:bg-green-100 hover:cursor-pointer hover:text-green-800 transition"
-                    >
-                      <Link to={RouteEditCategory(cat._id)}><FaRegEdit /></Link>
-                    </Button>
-                    <DeleteSingleCategory delId={cat._id} onSuccessDelete={showFreshData} />
+                  <TableCell >
+
+                    <div className="px-4 py-2 flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        className="text-green-600 border-green-600 hover:bg-green-100 hover:cursor-pointer hover:text-green-800 transition"
+                      >
+                        <Link to={RouteEditCategory(cat._id)}><FaRegEdit /></Link>
+                      </Button>
+                      <DeleteSingleCategory delId={cat._id} onSuccessDelete={showFreshData} />
+                    </div>
+
                   </TableCell>
                 </TableRow>
               ))}

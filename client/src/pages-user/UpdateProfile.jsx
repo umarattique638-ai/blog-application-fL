@@ -36,6 +36,8 @@ function UpdateProfile() {
   const { success, error, message, loading, } = useSelector((state) => state.user)
 
   const dispatch = useDispatch()
+
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 
@@ -117,13 +119,8 @@ function UpdateProfile() {
 
       toast.success(response.message)
       dispatch(resetUserState())
-      // dispatch(resetUser())
-      // setTimeout(() => {
-      //   navigate(RouteSignIn)
-      // }, 1000)
       form.reset()
       dispatch(setUser(response.updatedUser))
-      console.log(response.updatedUser)
 
 
 
@@ -134,6 +131,8 @@ function UpdateProfile() {
       setIsSubmitting(false); // 🔁 start loader
 
     }
+
+
 
 
   }

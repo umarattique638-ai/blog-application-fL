@@ -19,3 +19,14 @@ export const RouteEditCategory = (id) => {
     return `/category/update/id`;
   }
 };
+
+// BLog
+export const RouteDashBoardBlog = "/blogs";
+export const RouteAddBlog = "/blog/add";
+export const RouteEditBlog = (id) => {
+  if (id) {
+    return `/blog/update/${id}`;
+  } else {
+    return `/blog/update/id`;
+  }
+};
